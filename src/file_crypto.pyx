@@ -1,4 +1,4 @@
-import os
+from Crypto.Random import get_random_bytes
 from libc.stdlib cimport malloc, free
 from libc.stdio cimport FILE, fopen, fread, fwrite, fclose, remove
 
@@ -93,7 +93,7 @@ def encrypt_file(str path, bytes key, int chunk_size=268435456):
             read_size = fread(buffer, 1, chunk_size, f_in)
             if read_size == 0:
                 break
-            nonce_bytes = os.urandom(12)
+            nonce_bytes = get_random_bytes(12)
             cipher = AES.new(key, AES.MODE_GCM, nonce=nonce_bytes)
             encrypted_chunk, tag = cipher.encrypt_and_digest(bytes(buffer[:read_size]))
             nonce_view = nonce_bytes

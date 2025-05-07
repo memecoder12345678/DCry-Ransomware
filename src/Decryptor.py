@@ -14,7 +14,8 @@ from concurrent.futures import ThreadPoolExecutor
 import winshell
 from Crypto.Cipher import AES
 from colorama import Fore, init
-from file_crypto import decrypt_file
+from Crypto.Cipher import AES # hidden import
+from file_crypto import decrypt_file # type: ignore
 
 init(autoreset=True)
 

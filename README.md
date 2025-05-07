@@ -1,10 +1,11 @@
 # Don't-Cry Ransomware
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)
-![Cython](https://img.shields.io/badge/Requires-Cython-blue?logo=python&logoColor=white)
+![Cython](https://img.shields.io/badge/Requires-Cython-yellow?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-Apache--2.0-green?logo=open-source-initiative&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Windows-blue?logo=microsoftwindows&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Temporarily--Inactive-orange?logo=info&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue)
+![Status](https://img.shields.io/badge/Status-Temporarily--Inactive-orange)
 
+![DCry](https://github.com/memecoder12345678/DCry-Ransomware/blob/main/DCRY.png)
 
 Ransomware using python 💀💀💀
 

@@ -1,3 +1,8 @@
+################################################################################
+#                             Don't Cry Ransomware                             #
+#                          ! EDUCATIONAL PURPOSES ONLY !                       #
+################################################################################
+
 from setuptools import setup
 from Cython.Build import cythonize
 

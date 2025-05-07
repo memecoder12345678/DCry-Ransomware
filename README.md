@@ -10,7 +10,7 @@
 Ransomware using python 💀💀💀
 
 ## Usage
-- Open the `DCry.py` file and change the `YOUR_WEBHOOK_URL` variable to your discord webhook URL
+- Open the [DCry.py](https://github.com/memecoder12345678/DCry-Ransomware/blob/main/src/DCry.py) file and change the `YOUR_WEBHOOK_URL` variable to your Discord webhook URL.
 - Run the ransomware with the following command:
   ```bash
   python src/DCry.py
@@ -20,4 +20,4 @@ Ransomware using python 💀💀💀
   python src/Decryptor.py
   ```
 ## License
-- This project is licensed under the terms of the `Apache-2.0 license`
+- This project is licensed under the terms of the [Apache License 2.0](LICENSE).

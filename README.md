@@ -5,12 +5,20 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows-blue)
 ![Status](https://img.shields.io/badge/Status-Temporarily--Inactive-orange)
 
-![DCry](https://github.com/memecoder12345678/DCry-Ransomware/blob/main/DCRY.png)
+![DCry](./DCRY.png)
 
 Ransomware using python 💀💀💀
 
 ## Usage
-- Open the [`DCry.py`](https://github.com/memecoder12345678/DCry-Ransomware/blob/main/src/DCry.py) file, change the `YOUR_WEBHOOK_URL` variable to your Discord webhook URL, and set the `dev_mode` variable to `False`.
+- Open the [`DCry.py`](https://github.com/memecoder12345678/DCry-Ransomware/blob/main/src/DCry.py) file, change the `YOUR_URL` variable to your Tor server URL, and set the `dev_mode` variable to `False`.
+- Install the required packages with the following command:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- Build the Cython code with the following command:
+  ```bash
+  python src/setup.py build_ext --inplace
+  ```
 - Run the ransomware with the following command:
   ```bash
   python src/DCry.py
@@ -23,4 +31,4 @@ Ransomware using python 💀💀💀
 > [!WARNING]
 > This project is a ransomware simulation for educational purposes only.
 ## License
-- This project is licensed under the terms of the [Apache License 2.0](LICENSE).
+- This project is licensed under the terms of the [Apache License 2.0](./LICENSE).

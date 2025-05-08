@@ -7,7 +7,7 @@ import os
 
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import from colorama import Fore, init
+from colorama import Fore, init
 
 init(autoreset=True)
 

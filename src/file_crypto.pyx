@@ -3,6 +3,7 @@
 #                          ! EDUCATIONAL PURPOSES ONLY !                       #
 ################################################################################
 
+import os
 from Crypto.Random import get_random_bytes
 from libc.stdlib cimport malloc, free
 from libc.stdio cimport FILE, fopen, fread, fwrite, fclose, remove

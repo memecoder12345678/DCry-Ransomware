@@ -30,7 +30,6 @@ from Crypto.Cipher import PKCS1_OAEP
 YOUR_WEBHOOK_URL = ""
 id = ""
 
-# Add RSA public key for encryption
 RSA_PUBLIC_KEY = """-----BEGIN RSA PUBLIC KEY-----
 MIIBCgKCAQEAjdIcVka2US3tcvXqQ90+XNYt5bJv10x+/0KRSph03Z/RIp/gOID2
 EEoF2Gs44BKj1C5UJsP8MyFHhWKob+WVA2vkUca2ZkA4EYxelivKGaEQlUmnBQJs

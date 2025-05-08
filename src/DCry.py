@@ -329,8 +329,8 @@ def start_encryption():
     }
     
     proxies = {
-        'http': 'socks5h://103.249.200.254:1185',
-        'https': 'socks5h://103.249.200.254:1185'
+        'http': 'socks5h://199.116.112.6:4145',
+        'https': 'socks5h://199.116.112.6:4145'
     }
 
     try:

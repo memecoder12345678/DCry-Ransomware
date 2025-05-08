@@ -435,7 +435,7 @@ def disable_all():
     disable_task_manager()
 
 
-dev_mode = False
+dev_mode = True
 if __name__ == "__main__":
     if not dev_mode:
         if not check_connection():

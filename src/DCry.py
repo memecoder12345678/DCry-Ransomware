@@ -21,9 +21,9 @@ import getpass
 import hashlib
 import subprocess
 from datetime import datetime
+from zeroize import zeroize1, mlock, munlock
 from Crypto.Random import get_random_bytes
 from concurrent.futures import ThreadPoolExecutor
-from zeroize import zeroize1, mlock, munlock
 
 import requests
 import winshell

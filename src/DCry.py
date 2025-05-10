@@ -28,9 +28,9 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 import winshell
 from Crypto.Cipher import AES  # hidden import
+from Crypto.PublicKey import RSA
 from win32com.client import Dispatch
 from file_crypto import encrypt_file  # type: ignore
-from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
 YOUR_URL = "YOUR_URL"

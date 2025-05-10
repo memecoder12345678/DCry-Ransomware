@@ -10,12 +10,12 @@
 # The authors assume no liability for any misuse or damage caused.
 
 import os
-from flask import Flask, request, render_template_string  # type: ignore
 import os
 import json
 import base64
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+from flask import Flask, request, render_template_string
 
 
 RSA_PRIVATE_KEY = """-----BEGIN RSA PRIVATE KEY-----

